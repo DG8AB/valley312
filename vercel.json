@@ -8,6 +8,7 @@
     { "source": "/contact", "destination": "/contact.html" },
     { "source": "/success", "destination": "/success.html" },
     { "source": "/cancel", "destination": "/cancel.html" },
+    { "source": "/api/create-checkout-session", "destination": "/api/create-checkout-session.js" },
     { "source": "/(.*)", "destination": "/404.html" }
   ]
 }
