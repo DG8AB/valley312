@@ -49,7 +49,7 @@
 
         if (stripePublishableKey === STRIPE_PUBLISHABLE_KEY_PLACEHOLDER) {
             console.error("Stripe Error: Please replace 'pk_test_YOUR_PUBLISHABLE_KEY' in donate.html with your actual Stripe Publishable Key.");
-            alert("Configuration Error: Please update the Stripe Publishable Key in donate.html to enable donations. Check the browser console for details.");
+            alert("Configuration Error: Please update the Stripe Publishable Key within the <script> tag in donate.html to enable donations. Check the browser console for details.");
             return; // Prevent further execution if key is not set
         }
 
