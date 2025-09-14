@@ -15,7 +15,7 @@ This is a multi-page website for Iris Valley, a nonprofit dedicated to empowerin
 - **Responsive Design**: Built with Tailwind CSS for a modern and mobile-friendly layout, including a responsive navigation menu for smaller screens.
 - **Consistent Navigation**: All pages include a navigation bar and footer with the `™` symbol only in the footer copyright.
 - **Interactive Overlay**: A clickable circular image overlay in the bottom-left corner, linking to `dhruv.ftp.sh`. This functionality is embedded directly within each HTML file, not in a separate JavaScript file.
-- **Stripe Donation Integration (Client-Side & Serverless Backend)**: The donate page (`donate.html`) now includes a form for users to enter a custom donation amount. It integrates Stripe.js on the client-side and communicates with a conceptual backend API endpoint (`/api/create-checkout-session`) to create a Stripe Checkout session. A placeholder Node.js file (`api/create-checkout-session.js`) is provided as an example of how the server-side logic is implemented.
+- **Stripe Donation Integration (Client-Side & Serverless Backend)**: The donate page (`donate.html`) now includes a form for users to enter a custom donation amount. It integrates Stripe.js on the client-side and communicates with a conceptual backend API endpoint (`/api/create-checkout-session`) to create a Stripe Checkout session. A placeholder Node.js file (`api/create-checkout-session.js`) is provided as an example of how the server-side logic is implemented, now with enhanced error checking for missing API keys.
 - **Favicon**: The website logo is now used as the favicon for all pages.
 - **Inclusive Language**: All instances of "child bias" have been removed.
 - **"What We Do" Section Update**: The "What We Do" section on the homepage is now a wide bar stating "Not Decided."
@@ -42,7 +42,7 @@ STRIPE_SECRET_KEY=sk_test_YOUR_ACTUAL_SECRET_KEY
 STRIPE_PUBLISHABLE_KEY=pk_test_YOUR_ACTUAL_PUBLISHABLE_KEY
 ```
 
-*   **Note**: The `api/create-checkout-session.js` will read `STRIPE_SECRET_KEY` from this file when run locally.
+*   **Note**: The `api/create-checkout-session.js` will read `STRIPE_SECRET_KEY` from this file when run locally. The serverless function now includes a clear error message if this key is missing or is the placeholder value.
 
 #### B. For Vercel Deployment (Vercel Project Settings)
 
@@ -55,6 +55,7 @@ When deploying to Vercel, you must set these as [Environment Variables](https://
     *   `STRIPE_PUBLISHABLE_KEY`: Set its value to your actual Stripe Publishable Key (`pk_live_...` or `pk_test_...`).
     
     Ensure these are configured for the correct environments (e.g., Development, Preview, Production).
+    The serverless function (`api/create-checkout-session.js`) will now return a `500` error with a specific message if `STRIPE_SECRET_KEY` is not correctly configured in your Vercel environment.
 
 ### 3. **CRITICAL: Update `donate.html` (Client-Side)**
 
@@ -71,7 +72,7 @@ const stripePublishableKey = STRIPE_PUBLISHABLE_KEY_PLACEHOLDER; // REPLACE THIS
 const stripePublishableKey = 'pk_test_51Om...'; // Your actual key
 ```
 
-This key is publicly visible, so it's safe to include directly in your client-side JavaScript for a static site. The client-side script now includes a console error and an alert if the placeholder is still present.
+This key is publicly visible, so it's safe to include directly in your client-side JavaScript for a static site. The client-side script now includes a console error and an alert if the placeholder is still present, preventing the donation form from submitting.
 
 ### 4. Deploy the Backend (Vercel Serverless Function)
 
