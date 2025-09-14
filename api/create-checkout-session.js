@@ -8,10 +8,18 @@ const app = express();
 const dotenv = require('dotenv');
 dotenv.config(); // Load environment variables from .env file
 
-// Initialize Stripe with your secret key. This key must be kept secret and only used server-side.
-// It will be loaded from process.env.STRIPE_SECRET_KEY, which comes from your .env file locally
-// or Vercel environment variables when deployed.
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+let stripe;
+const secretKey = process.env.STRIPE_SECRET_KEY;
+
+// CRITICAL: Check if the Stripe Secret Key is loaded and is not the placeholder.
+if (!secretKey || secretKey === 'sk_test_YOUR_SECRET_KEY') {
+    console.error('Server-side Stripe Error: STRIPE_SECRET_KEY is not set or is still a placeholder.');
+    console.error('Please configure your .env file locally, or Vercel environment variables for deployment.');
+    console.error('Donation functionality will be disabled until a valid secret key is provided.');
+    stripe = null; // Mark stripe as not initialized
+} else {
+    stripe = require('stripe')(secretKey);
+}
 
 app.use(express.json()); // Enable JSON body parsing for incoming requests
 
@@ -30,6 +38,11 @@ app.use((req, res, next) => {
 // Define the API endpoint for creating a Stripe Checkout Session
 // This endpoint should receive the donation amount from the client.
 app.post('/api/create-checkout-session', async (req, res) => {
+    // If Stripe wasn't initialized due to missing or placeholder key, return an error immediately
+    if (!stripe) {
+        return res.status(500).json({ error: 'Stripe is not configured. Server-side API key is missing or invalid.' });
+    }
+
     const { amount } = req.body;
 
     // Basic validation for the donation amount
