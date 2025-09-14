@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
 
         // Initialize Stripe instance only once per cold start
         if (!stripeInstance) {
-            stripeInstance = require('stripe')(process.env.STRIPE_SECRET_KEY);
+            stripeInstance = require('stripe')('sk_test_51S73xJBIjmogVQSWxewwhXAvEB06V0DFphLqdsyK8tE1whEdEcS9Lfd9awgDSVdfbdfcDiOrSXMKgnHByYUZK3zU005n8uOSkX');
         }
 
         const { amount } = req.body;
