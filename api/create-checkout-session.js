@@ -1,8 +1,7 @@
-require('dotenv').config();
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+let stripeInstance = null; // Declare globally, initialize lazily
 
 module.exports = async (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins for testing
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -14,20 +13,24 @@ module.exports = async (req, res) => {
         return res.status(405).json({ message: 'Method Not Allowed. Only POST requests are supported.' });
     }
 
-    // Check if Stripe Secret Key is configured
-    if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY === 'sk_test_YOUR_ACTUAL_SECRET_KEY') {
-        console.error('Stripe Secret Key not configured or is placeholder.');
-        return res.status(500).json({ message: 'Server configuration error: Stripe Secret Key is missing or invalid.' });
-    }
-
-    const { amount } = req.body;
-
-    if (!amount || typeof amount !== 'number' || amount < 0.50) {
-        return res.status(400).json({ message: 'Invalid amount provided. Amount must be a number and at least $0.50.' });
-    }
-
     try {
-        const session = await stripe.checkout.sessions.create({
+        if (!process.env.STRIPE_SECRET_KEY) {
+            console.error('Environment variable STRIPE_SECRET_KEY is not set.');
+            return res.status(500).json({ message: 'Server configuration error: Stripe Secret Key is missing.' });
+        }
+
+        // Initialize Stripe instance only once per cold start
+        if (!stripeInstance) {
+            stripeInstance = require('stripe')(process.env.STRIPE_SECRET_KEY);
+        }
+
+        const { amount } = req.body;
+
+        if (!amount || typeof amount !== 'number' || amount < 0.50) {
+            return res.status(400).json({ message: 'Invalid amount provided. Amount must be a number and at least $0.50.' });
+        }
+
+        const session = await stripeInstance.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [
                 {
@@ -48,7 +51,7 @@ module.exports = async (req, res) => {
 
         res.status(200).json({ id: session.id });
     } catch (error) {
-        console.error('Error creating checkout session:', error);
-        res.status(500).json({ message: error.message || 'A server error occurred while creating the checkout session.' });
+        console.error('Error in create-checkout-session:', error);
+        res.status(500).json({ message: error.raw?.message || error.message || 'A server error occurred while creating the checkout session.' });
     }
 };
