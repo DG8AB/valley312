@@ -41,8 +41,8 @@ module.exports = async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: `${req.headers.origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${req.headers.origin}/cancel.html`,
+            success_url: 'https://irisvalley.ftp.sh/success?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url: 'https://irisvalley.ftp.sh/cancel',
         });
 
         res.status(200).json({ id: session.id });
