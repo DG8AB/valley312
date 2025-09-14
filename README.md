@@ -1,12 +1,12 @@
 # Iris Valley Website
 
-This is a multi-page website for Iris Valley, a nonprofit dedicated to empowering underprivileged kids.
+This is a multi-page website for Iris Valley, a nonprofit dedicated to empowering underprivileged individuals and communities.
 
 ## Pages
-- **Home (`index.html`)**: The main landing page for Iris Valley.
-- **Gallery (`gallery.html`)**: A collection of photos from Iris Valley's activities.
-- **Events (`events.html`)**: Information about upcoming events.
-- **Donate (`donate.html`)**: Page for making donations to support the cause.
+- **Home (`index.html`)**: The main landing page for Iris Valley, now including upcoming events.
+- **Gallery (`gallery.html`)**: A collection of photos from Iris Valley's activities. Now states "No photos yet."
+- **Events (`events.html`)**: Information about future events and announcements (main events moved to homepage).
+- **Donate (`donate.html`)**: Page for making donations to support the cause, now integrated with a conceptual backend API for Stripe Checkout.
 - **Contact (`contact.html`)**: Form to get in touch with Iris Valley.
 
 ## Features
@@ -15,24 +15,77 @@ This is a multi-page website for Iris Valley, a nonprofit dedicated to empowerin
 - **Responsive Design**: Built with Tailwind CSS for a modern and mobile-friendly layout, including a responsive navigation menu for smaller screens.
 - **Consistent Navigation**: All pages include a navigation bar and footer with the `™` symbol only in the footer copyright.
 - **Interactive Overlay**: A clickable circular image overlay in the bottom-left corner, linking to `dhruv.ftp.sh`. This functionality is embedded directly within each HTML file, not in a separate JavaScript file.
-- **Stripe Donation Integration (Client-Side Placeholder)**: The donate page (`donate.html`) now includes a form for users to enter a custom donation amount. It integrates Stripe.js on the client-side. **However, please note that a fully functional and secure Stripe Checkout session (especially for dynamic amounts) requires a backend server to create the session with your secret API key.** The current implementation provides the client-side form and JavaScript structure, with clear instructions on where a backend API call would be necessary.
+- **Stripe Donation Integration (Client-Side & Serverless Backend)**: The donate page (`donate.html`) now includes a form for users to enter a custom donation amount. It integrates Stripe.js on the client-side and communicates with a conceptual backend API endpoint (`/api/create-checkout-session`) to create a Stripe Checkout session. A placeholder Node.js file (`api/create-checkout-session.js`) is provided as an example of how the server-side logic is implemented.
 - **Favicon**: The website logo is now used as the favicon for all pages.
+- **Inclusive Language**: All instances of "child bias" have been removed.
+- **"What We Do" Section Update**: The "What We Do" section on the homepage is now a wide bar stating "Not Decided."
+- **Gallery Update**: The gallery page now explicitly says "No photos yet."
 
-## How to View
-1.  **Save Files**: Save all the provided files into a single directory.
-2.  **Open in Browser**: Open any of the `.html` files (e.g., `index.html`) directly in your web browser.
+## How to Make the Donation Page Work (Stripe Integration)
 
-## Stripe Integration Setup (Requires Backend)
-To make the donation page fully functional, you will need a backend server to:
-1.  **Create a `.env` file**: Place your `STRIPE_SECRET_KEY` and `STRIPE_PUBLISHABLE_KEY` in a `.env` file in your *backend* project directory.
-2.  **Server-Side Endpoint**: Implement a server-side endpoint (e.g., `/create-checkout-session`) that:
-    *   Receives the donation `amount` from the client.
-    *   Uses your `STRIPE_SECRET_KEY` to call the Stripe API and create a `checkout.Session`.
-    *   Returns the `sessionId` to the client.
-3.  **Client-Side Update**: In `donate.html`, replace the placeholder `sessionId` with the one received from your backend and ensure the `fetch` call is uncommented and points to your actual backend endpoint.
+To get the donation page fully functional, you need to configure your Stripe API keys and deploy the backend logic.
 
-## Deployment with Vercel
-This site can be deployed with Vercel. The `vercel.json` file is included with a rewrite configuration. Please note that `{"source": "/(.*)", "destination": "/index.html"}` is a common pattern for Single Page Applications (SPAs). In a Multi-Page Application (MPA) like this one, it might redirect all non-explicitly-matched paths to `index.html`, potentially affecting direct access to other pages if not navigated internally. Ensure this configuration aligns with your desired routing behavior.
+### 1. Obtain Your Stripe API Keys
 
-## Copyright
-&copy; 2025 Iris Valley&trade;. All rights reserved.
+Go to your [Stripe Dashboard](https://dashboard.stripe.com/test/apikeys) (in test mode for development, then switch to live mode). You will need:
+-   **Publishable Key**: Starts with `pk_test_...` or `pk_live_...`. This key is used in your client-side `donate.html`.
+-   **Secret Key**: Starts with `sk_test_...` or `sk_live_...`. This key **must be kept secret** and only used on your backend server.
+
+### 2. Configure Environment Variables
+
+#### A. For Local Development (`.env` file)
+
+Create a `.env` file in the root of your project (where `api/create-checkout-session.js` is also accessible relative to your project root) with your actual Stripe keys:
+
+```dotenv
+STRIPE_SECRET_KEY=sk_test_YOUR_ACTUAL_SECRET_KEY
+STRIPE_PUBLISHABLE_KEY=pk_test_YOUR_ACTUAL_PUBLISHABLE_KEY
+```
+
+*   **Note**: The `api/create-checkout-session.js` will read `STRIPE_SECRET_KEY` from this file when run locally.
+
+#### B. For Vercel Deployment (Vercel Project Settings)
+
+When deploying to Vercel, you must set these as [Environment Variables](https://vercel.com/docs/concepts/projects/environment-variables) in your Vercel project settings:
+
+1.  Go to your Vercel project dashboard.
+2.  Navigate to **Settings** -> **Environment Variables**.
+3.  Add two new variables:
+    *   `STRIPE_SECRET_KEY`: Set its value to your actual Stripe Secret Key (`sk_live_...` or `sk_test_...`).
+    *   `STRIPE_PUBLISHABLE_KEY`: Set its value to your actual Stripe Publishable Key (`pk_live_...` or `pk_test_...`).
+    
+    Ensure these are configured for the correct environments (e.g., Development, Preview, Production).
+
+### 3. Update `donate.html`
+
+Open `donate.html` and locate the line:
+
+```html
+const stripe = Stripe('pk_test_YOUR_PUBLIPE_PUBLISHABLE_KEY');
+```
+
+**Manually replace** `'pk_test_YOUR_PUBLIPE_PUBLISHABLE_KEY'` with your actual Stripe **Publishable Key** (e.g., `'pk_test_your_actual_publishable_key_here'`). This key is publicly visible, so it's safe to include directly in your client-side JavaScript for a static site.
+
+### 4. Deploy the Backend (Vercel Serverless Function)
+
+The `api/create-checkout-session.js` file is designed to run as a [Vercel Serverless Function](https://vercel.com/docs/concepts/functions/serverless-functions). The `vercel.json` file is already configured to route requests to `/api/create-checkout-session` to this file.
+
+To make this backend functional:
+
+1.  **Ensure `package.json` and Dependencies**: The `api/create-checkout-session.js` uses `express`, `stripe`, and `dotenv`. Make sure your `package.json` includes these dependencies and run `npm install` locally before deploying.
+    *   If you don't have a `package.json` in your project root, create one (`npm init -y`) and then add these dependencies (`npm install express stripe dotenv`).
+    *   Vercel will automatically detect and install these dependencies during deployment if `package.json` is present.
+
+2.  **Deploy to Vercel**: Once your `donate.html` is updated with your publishable key and your environment variables are set in Vercel, deploy your project. Vercel will automatically deploy `api/create-checkout-session.js` as a serverless function that can access `STRIPE_SECRET_KEY` from your Vercel environment variables.
+
+### 5. Test the Donation Flow
+
+After deployment and configuration:
+
+1.  Navigate to your `donate.html` page.
+2.  Enter a donation amount (minimum $5).
+3.  Click "Donate Now".
+4.  You should be redirected to a Stripe Checkout page.
+5.  Complete the payment (using [Stripe test card numbers](https://stripe.com/docs/testing)).
+6.  Upon successful payment, you should be redirected to `success.html`.
+7.  If cancelled, you should be redirected to `cancel.html`.
