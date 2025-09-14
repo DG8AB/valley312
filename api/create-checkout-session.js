@@ -1,19 +1,10 @@
-// This file is a conceptual backend API endpoint for creating Stripe Checkout Sessions.
-// It is written in Node.js using Express and the Stripe Node.js library.
-// IMPORTANT: This file cannot be run directly as a static file from your website.
-// On Vercel, this file will be deployed as a serverless function.
-
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
-dotenv.config(); // Load environment variables from .env file
-
-// Initialize Stripe with your secret key. This key must be kept secret and only used server-side.
-// It will be loaded from process.env.STRIPE_SECRET_KEY, which comes from your .env file locally
-// or Vercel environment variables when deployed.
+dotenv.config(); 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-app.use(express.json()); // Enable JSON body parsing for incoming requests
+app.use(express.json()); 
 
 // Middleware to allow CORS for development purposes.
 // In a production environment, you should restrict this to your specific frontend URL(s).
