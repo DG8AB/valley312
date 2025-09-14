@@ -40,18 +40,7 @@
         }
 
         // Stripe Integration Script
-        // CRITICAL: You MUST replace 'pk_test_YOUR_PUBLISHABLE_KEY' below with your actual Stripe publishable key.
-        // This key is publicly accessible and typically starts with 'pk_live_' or 'pk_test_'.
-        // You can find this in your Stripe Dashboard > Developers > API keys.
-        // If you see a configuration error alert, it means you have NOT replaced the placeholder.
-        const STRIPE_PUBLISHABLE_KEY_PLACEHOLDER = 'pk_test_51S73xJBIjmogVQSWAST7nt0NGPTGg0P5BZsr1JDSKqTYRT6X31dlb7wBvO2U2wJ8Eg7LcnhJAQ1FmoSdfpwFh0cg00dtjdJjqk';
-        const stripePublishableKey = STRIPE_PUBLISHABLE_KEY_PLACEHOLDER; // REPLACE THIS LINE with your actual key, e.g., 'pk_test_12345...'
-
-        if (stripePublishableKey === STRIPE_PUBLISHABLE_KEY_PLACEHOLDER) {
-            console.error("Stripe Error: Please replace 'pk_test_YOUR_PUBLISHABLE_KEY' in donate.html with your actual Stripe Publishable Key.");
-            alert("Configuration Error: Please update the Stripe Publishable Key within the <script> tag in donate.html to enable donations. Check the browser console for details.");
-            return; // Prevent further execution if key is not set
-        }
+        const stripePublishableKey = 'pk_test_51S73xJBIjmogVQSWAST7nt0NGPTGg0P5BZsr1JDSKqTYRT6X31dlb7wBvO2U2wJ8Eg7LcnhJAQ1FmoSdfpwFh0cg00dtjdJjqk';
 
         const stripe = Stripe(stripePublishableKey);
         const donateForm = document.getElementById('donation-form');
