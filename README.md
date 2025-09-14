@@ -56,15 +56,22 @@ When deploying to Vercel, you must set these as [Environment Variables](https://
     
     Ensure these are configured for the correct environments (e.g., Development, Preview, Production).
 
-### 3. Update `donate.html`
+### 3. **CRITICAL: Update `donate.html` (Client-Side)**
 
-Open `donate.html` and locate the line:
+Open `donate.html` and locate the JavaScript section. You will find a placeholder for the Stripe Publishable Key:
 
-```html
-const stripe = Stripe('pk_test_YOUR_PUBLIPE_PUBLISHABLE_KEY');
+```javascript
+const STRIPE_PUBLISHABLE_KEY_PLACEHOLDER = 'pk_test_YOUR_PUBLISHABLE_KEY';
+const stripePublishableKey = STRIPE_PUBLISHABLE_KEY_PLACEHOLDER; // REPLACE THIS LINE with your actual key, e.g., 'pk_test_12345...' 
 ```
 
-**Manually replace** `'pk_test_YOUR_PUBLIPE_PUBLISHABLE_KEY'` with your actual Stripe **Publishable Key** (e.g., `'pk_test_your_actual_publishable_key_here'`). This key is publicly visible, so it's safe to include directly in your client-side JavaScript for a static site.
+**You MUST manually replace** `'pk_test_YOUR_PUBLISHABLE_KEY'` in the line `const stripePublishableKey = STRIPE_PUBLISHABLE_KEY_PLACEHOLDER;` with your actual Stripe **Publishable Key** (e.g., `'pk_test_your_actual_publishable_key_here'`). For example:
+
+```javascript
+const stripePublishableKey = 'pk_test_51Om...'; // Your actual key
+```
+
+This key is publicly visible, so it's safe to include directly in your client-side JavaScript for a static site. The client-side script now includes a console error and an alert if the placeholder is still present.
 
 ### 4. Deploy the Backend (Vercel Serverless Function)
 
