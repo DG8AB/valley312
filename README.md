@@ -5,7 +5,7 @@ This is a multi-page website for Iris Valley, a nonprofit dedicated to empowerin
 ## Pages
 - **Home (`index.html`)**: The main landing page for Iris Valley, now including upcoming events.
 - **Gallery (`gallery.html`)**: A collection of photos from Iris Valley's activities. Now states "No photos yet."
-- **Events (`events.html`)**: Information about future events and announcements (main events moved to homepage).
+- **Events (`events.html`)**: Information about future events and announcements. Now explicitly lists the "Open Mic Night at Jackie Sweets" event.
 - **Donate (`donate.html`)**: Page for making donations to support the cause, now integrated with a conceptual backend API for Stripe Checkout.
 - **Contact (`contact.html`)**: Form to get in touch with Iris Valley.
 
@@ -15,12 +15,12 @@ This is a multi-page website for Iris Valley, a nonprofit dedicated to empowerin
 - **Responsive Design**: Built with Tailwind CSS for a modern and mobile-friendly layout, including a responsive navigation menu for smaller screens.
 - **Consistent Navigation**: All pages include a navigation bar and footer with the `™` symbol only in the footer copyright.
 - **Interactive Overlay**: A clickable circular image overlay in the bottom-left corner, linking to `dhruv.ftp.sh`. This functionality is embedded directly within each HTML file, not in a separate JavaScript file.
-- **Stripe Donation Integration (Client-Side & Serverless Backend)**: The donate page (`donate.html`) now includes a form for users to enter a custom donation amount. It integrates Stripe.js on the client-side and communicates with a conceptual backend API endpoint (`/api/create-checkout-session`) to create a Stripe Checkout session. A Node.js file (`api/create-checkout-session.js`) is provided as an example of how the server-side logic is implemented, now with enhanced error checking, robust Stripe initialization, and proper JSON error responses.
+- **Stripe Donation Integration (Client-Side & Serverless Backend)**: The donate page (`donate.html`) now includes a form for users to enter a custom donation amount. It integrates Stripe.js on the client-side and communicates with a conceptual backend API endpoint (`/api/create-checkout-session`) to create a Stripe Checkout session. A Node.js file (`api/create-checkout-session.js`) is provided as an example of how the server-side logic is implemented, now with enhanced error checking, robust Stripe initialization, and proper JSON error responses. The current implementation correctly uses Stripe's hosted checkout page for payment processing.
 - **Favicon**: The website logo is now used as the favicon for all pages.
 - **Inclusive Language**: All instances of "child bias" have been removed.
 - **"What We Do" Section Update**: The "What We Do" section on the homepage is now a wide bar stating "Not Decided."
 - **Gallery Update**: The gallery page now explicitly says "No photos yet."
-- **Homepage Events Update**: The homepage now features only one event: "Open Mic Night at Jackie Sweets." Clicking this event opens a Google Form in an iframe modal for sign-ups, with no fixed date yet.
+- **Homepage Events Update**: The homepage now features only one event: "Open Mic Night at Jackie Sweets." Clicking this event opens a Google Form in an iframe modal for sign-ups, with no fixed date yet. This event is also now displayed on the Events page.
 
 ## How to Make the Donation Page Work (Stripe Integration)
 
