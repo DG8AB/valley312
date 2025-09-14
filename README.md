@@ -15,11 +15,12 @@ This is a multi-page website for Iris Valley, a nonprofit dedicated to empowerin
 - **Responsive Design**: Built with Tailwind CSS for a modern and mobile-friendly layout, including a responsive navigation menu for smaller screens.
 - **Consistent Navigation**: All pages include a navigation bar and footer with the `™` symbol only in the footer copyright.
 - **Interactive Overlay**: A clickable circular image overlay in the bottom-left corner, linking to `dhruv.ftp.sh`. This functionality is embedded directly within each HTML file, not in a separate JavaScript file.
-- **Stripe Donation Integration (Client-Side & Serverless Backend)**: The donate page (`donate.html`) now includes a form for users to enter a custom donation amount. It integrates Stripe.js on the client-side and communicates with a conceptual backend API endpoint (`/api/create-checkout-session`) to create a Stripe Checkout session. A placeholder Node.js file (`api/create-checkout-session.js`) is provided as an example of how the server-side logic is implemented, now with enhanced error checking for missing API keys.
+- **Stripe Donation Integration (Client-Side & Serverless Backend)**: The donate page (`donate.html`) now includes a form for users to enter a custom donation amount. It integrates Stripe.js on the client-side and communicates with a conceptual backend API endpoint (`/api/create-checkout-session`) to create a Stripe Checkout session. A Node.js file (`api/create-checkout-session.js`) is provided as an example of how the server-side logic is implemented, now with enhanced error checking, robust Stripe initialization, and proper JSON error responses.
 - **Favicon**: The website logo is now used as the favicon for all pages.
 - **Inclusive Language**: All instances of "child bias" have been removed.
 - **"What We Do" Section Update**: The "What We Do" section on the homepage is now a wide bar stating "Not Decided."
 - **Gallery Update**: The gallery page now explicitly says "No photos yet."
+- **Homepage Events Update**: The homepage now features only one event: "Open Mic Night at Jackie Sweets." Clicking this event opens a Google Form in an iframe modal for sign-ups, with no fixed date yet.
 
 ## How to Make the Donation Page Work (Stripe Integration)
 
@@ -35,14 +36,14 @@ Go to your [Stripe Dashboard](https://dashboard.stripe.com/test/apikeys) (in tes
 
 #### A. For Local Development (`.env` file)
 
-Create a `.env` file in the root of your project (where `api/create-checkout-session.js` is also accessible relative to your project root) with your actual Stripe keys:
+This project now includes a `.env` file with test keys provided by the user. For production, replace these with your live keys and ensure you never commit sensitive information to version control.
 
 ```dotenv
-STRIPE_SECRET_KEY=sk_test_YOUR_ACTUAL_SECRET_KEY
-STRIPE_PUBLISHABLE_KEY=pk_test_YOUR_ACTUAL_PUBLISHABLE_KEY
+STRIPE_SECRET_KEY=sk_test_51S73xJBIjmogVQSWxewwhXAvEB06V0DFphLqdsyK8tE1whEdEcS9Lfd9awgDSVdfbdfcDiOrSXMKgnHByYUZK3zU005n8uOSkX
+STRIPE_PUBLISHABLE_KEY=pk_test_51S73xJBIjmogVQSWAST7nt0NGPTGg0P5BZsr1JDSKqTYRT6X31dlb7wBvO2U2wJ8Eg7LcnhJAQ1FmoSdfpwFh0cg00dtjdJjqk
 ```
 
-*   **Note**: The `api/create-checkout-session.js` will read `STRIPE_SECRET_KEY` from this file when run locally. The serverless function now includes a clear error message if this key is missing or is the placeholder value.
+*   **Note**: The `api/create-checkout-session.js` will read `STRIPE_SECRET_KEY` from this file when run locally. The serverless function now includes a clear error message if this key is missing or is the placeholder value, and explicitly catches initialization errors.
 
 #### B. For Vercel Deployment (Vercel Project Settings)
 
@@ -55,24 +56,11 @@ When deploying to Vercel, you must set these as [Environment Variables](https://
     *   `STRIPE_PUBLISHABLE_KEY`: Set its value to your actual Stripe Publishable Key (`pk_live_...` or `pk_test_...`).
     
     Ensure these are configured for the correct environments (e.g., Development, Preview, Production).
-    The serverless function (`api/create-checkout-session.js`) will now return a `500` error with a specific message if `STRIPE_SECRET_KEY` is not correctly configured in your Vercel environment.
+    The serverless function (`api/create-checkout-session.js`) will now return a `500` error with a specific message if `STRIPE_SECRET_KEY` is not correctly configured in your Vercel environment or if Stripe initialization fails.
 
-### 3. **CRITICAL: Update `donate.html` (Client-Side)**
+### 3. **`donate.html` (Client-Side) - Already Updated**
 
-Open `donate.html` and locate the JavaScript section. You will find a placeholder for the Stripe Publishable Key:
-
-```javascript
-const STRIPE_PUBLISHABLE_KEY_PLACEHOLDER = 'pk_test_YOUR_PUBLISHABLE_KEY';
-const stripePublishableKey = STRIPE_PUBLISHABLE_KEY_PLACEHOLDER; // REPLACE THIS LINE with your actual key, e.g., 'pk_test_12345...' 
-```
-
-**You MUST manually replace** `'pk_test_YOUR_PUBLISHABLE_KEY'` in the line `const stripePublishableKey = STRIPE_PUBLISHABLE_KEY_PLACEHOLDER;` with your actual Stripe **Publishable Key** (e.g., `'pk_test_your_actual_publishable_key_here'`). For example:
-
-```javascript
-const stripePublishableKey = 'pk_test_51Om...'; // Your actual key
-```
-
-This key is publicly visible, so it's safe to include directly in your client-side JavaScript for a static site. The client-side script now includes a console error and an alert if the placeholder is still present, preventing the donation form from submitting.
+The `donate.html` file has been updated with the provided `STRIPE_PUBLISHABLE_KEY` (`pk_test_51S73xJBIjmogVQSWAST7nt0NGPTGg0P5BZsr1JDSKqTYRT6X31dlb7wBvO2U2wJ8Eg7LcnhJAQ1FmoSdfpwFh0cg00dtjdJjqk`) directly in its JavaScript. This key is publicly visible and safe to include directly.
 
 ### 4. Deploy the Backend (Vercel Serverless Function)
 
@@ -80,9 +68,7 @@ The `api/create-checkout-session.js` file is designed to run as a [Vercel Server
 
 To make this backend functional:
 
-1.  **Ensure `package.json` and Dependencies**: The `api/create-checkout-session.js` uses `express`, `stripe`, and `dotenv`. Make sure your `package.json` includes these dependencies and run `npm install` locally before deploying.
-    *   If you don't have a `package.json` in your project root, create one (`npm init -y`) and then add these dependencies (`npm install express stripe dotenv`).
-    *   Vercel will automatically detect and install these dependencies during deployment if `package.json` is present.
+1.  **Ensure `package.json` and Dependencies**: The `api/create-checkout-session.js` uses `express`, `stripe`, and `dotenv`. Your `package.json` now includes these dependencies. Ensure you run `npm install` locally before deploying.
 
 2.  **Deploy to Vercel**: Once your `donate.html` is updated with your publishable key and your environment variables are set in Vercel, deploy your project. Vercel will automatically deploy `api/create-checkout-session.js` as a serverless function that can access `STRIPE_SECRET_KEY` from your Vercel environment variables.
 
@@ -91,7 +77,7 @@ To make this backend functional:
 After deployment and configuration:
 
 1.  Navigate to your `donate.html` page.
-2.  Enter a donation amount (minimum $5).
+2.  Enter a donation amount (minimum $0.50 for Stripe test mode).
 3.  Click "Donate Now".
 4.  You should be redirected to a Stripe Checkout page.
 5.  Complete the payment (using [Stripe test card numbers](https://stripe.com/docs/testing)).
