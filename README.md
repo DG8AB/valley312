@@ -1,6 +1,6 @@
-# Iris Valley&trade; Website
+# Iris Valley Website
 
-This is a multi-page website for Iris Valley&trade;, a nonprofit dedicated to empowering underprivileged kids.
+This is a multi-page website for Iris Valley, a nonprofit dedicated to empowering underprivileged kids.
 
 ## Pages
 - **Home (`index.html`)**: not decided.
