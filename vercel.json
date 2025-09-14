@@ -6,6 +6,8 @@
     { "source": "/events", "destination": "/events.html" },
     { "source": "/donate", "destination": "/donate.html" },
     { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/success", "destination": "/success.html" },
+    { "source": "/cancel", "destination": "/cancel.html" },
     { "source": "/(.*)", "destination": "/404.html" }
   ]
 }
