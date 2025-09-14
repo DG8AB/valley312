@@ -32,47 +32,27 @@ Go to your [Stripe Dashboard](https://dashboard.stripe.com/test/apikeys) (in tes
 -   **Publishable Key**: Starts with `pk_test_...` or `pk_live_...`. This key is used in your client-side `donate.html`.
 -   **Secret Key**: Starts with `sk_test_...` or `sk_live_...`. This key **must be kept secret** and only used on your backend server.
 
-### 2. Configure Environment Variables
+### 2. Configure API Keys Directly
 
-#### A. For Local Development (`.env` file)
-
-This project now includes a `.env` file with test keys provided by the user. For production, replace these with your live keys and ensure you never commit sensitive information to version control.
-
-```dotenv
-STRIPE_SECRET_KEY=sk_test_51S73xJBIjmogVQSWxewwhXAvEB06V0DFphLqdsyK8tE1whEdEcS9Lfd9awgDSVdfbdfcDiOrSXMKgnHByYUZK3zU005n8uOSkX
-STRIPE_PUBLISHABLE_KEY=pk_test_51S73xJBIjmogVQSWAST7nt0NGPTGg0P5BZsr1JDSKqTYRT6X31dlb7wBvO2U2wJ8Eg7LcnhJAQ1FmoSdfpwFh0cg00dtjdJjqk
-```
-
-*   **Note**: The `api/create-checkout-session.js` will read `STRIPE_SECRET_KEY` from this file when run locally. The serverless function now includes a clear error message if this key is missing or is the placeholder value, and explicitly catches initialization errors.
-
-#### B. For Vercel Deployment (Vercel Project Settings)
-
-When deploying to Vercel, you must set these as [Environment Variables](https://vercel.com/docs/concepts/projects/environment-variables) in your Vercel project settings:
-
-1.  Go to your Vercel project dashboard.
-2.  Navigate to **Settings** -> **Environment Variables**.
-3.  Add two new variables:
-    *   `STRIPE_SECRET_KEY`: Set its value to your actual Stripe Secret Key (`sk_live_...` or `sk_test_...`).
-    *   `STRIPE_PUBLISHABLE_KEY`: Set its value to your actual Stripe Publishable Key (`pk_live_...` or `pk_test_...`).
-    
-    Ensure these are configured for the correct environments (e.g., Development, Preview, Production).
-    The serverless function (`api/create-checkout-session.js`) will now return a `500` error with a specific message if `STRIPE_SECRET_KEY` is not correctly configured in your Vercel environment or if Stripe initialization fails.
-
-### 3. **`donate.html` (Client-Side) - Already Updated**
+#### A. Client-Side (`donate.html`)
 
 The `donate.html` file has been updated with the provided `STRIPE_PUBLISHABLE_KEY` (`pk_test_51S73xJBIjmogVQSWAST7nt0NGPTGg0P5BZsr1JDSKqTYRT6X31dlb7wBvO2U2wJ8Eg7LcnhJAQ1FmoSdfpwFh0cg00dtjdJjqk`) directly in its JavaScript. This key is publicly visible and safe to include directly.
 
-### 4. Deploy the Backend (Vercel Serverless Function)
+#### B. Server-Side (`api/create-checkout-session.js`)
+
+The `STRIPE_SECRET_KEY` is now hardcoded directly into `api/create-checkout-session.js`. For production environments, it is strongly recommended to use environment variables for sensitive keys instead of hardcoding them.
+
+### 3. Deploy the Backend (Vercel Serverless Function)
 
 The `api/create-checkout-session.js` file is designed to run as a [Vercel Serverless Function](https://vercel.com/docs/concepts/functions/serverless-functions). The `vercel.json` file is already configured to route requests to `/api/create-checkout-session` to this file.
 
 To make this backend functional:
 
-1.  **Ensure `package.json` and Dependencies**: The `api/create-checkout-session.js` uses `express`, `stripe`, and `dotenv`. Your `package.json` now includes these dependencies. Ensure you run `npm install` locally before deploying.
+1.  **Ensure `package.json` and Dependencies**: The `api/create-checkout-session.js` uses `stripe`. Your `package.json` now includes this dependency. Ensure you run `npm install` locally before deploying.
 
-2.  **Deploy to Vercel**: Once your `donate.html` is updated with your publishable key and your environment variables are set in Vercel, deploy your project. Vercel will automatically deploy `api/create-checkout-session.js` as a serverless function that can access `STRIPE_SECRET_KEY` from your Vercel environment variables.
+2.  **Deploy to Vercel**: Once your `donate.html` is updated with your publishable key and your backend (`api/create-checkout-session.js`) has the secret key, deploy your project. Vercel will automatically deploy `api/create-checkout-session.js` as a serverless function.
 
-### 5. Test the Donation Flow
+### 4. Test the Donation Flow
 
 After deployment and configuration:
 
