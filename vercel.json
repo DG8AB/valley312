@@ -1,5 +1,13 @@
 {
   "rewrites": [
-    { "source": "/api/create-checkout-session", "destination": "/api/create-checkout-session.js" }
+    { "source": "/api/create-checkout-session", "destination": "/api/create-checkout-session.js" },
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/gallery", "destination": "/gallery.html" },
+    { "source": "/events", "destination": "/events.html" },
+    { "source": "/donate", "destination": "/donate.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/success", "destination": "/success.html" },
+    { "source": "/cancel", "destination": "/cancel.html" },
+    { "source": "/404", "destination": "/404.html" }
   ]
 }
